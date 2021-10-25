@@ -8,24 +8,13 @@ namespace ThreadObserver.Abstractions
 {
     public abstract class Publisher : IPublisher
     {
-        public event EventHandler<QueueEventArgs> Published;
-
-        public abstract void AddNumberToQueue(Queue<int> queue);
-
-        public void Attach(ISubscriber subscriber)
+        public Publisher(Queue<int> queue)
         {
-            Published += subscriber.Update;
+            Queue = queue;
         }
 
-        public void Detach(ISubscriber subscriber)
-        {
-            Published -= subscriber.Update;
-        }
+        protected Queue<int> Queue { get; }
 
-        public void Publish(Queue<int> queue)
-        {
-            Console.WriteLine($"{GetType()} has published a queue.");
-            Published?.Invoke(this, new QueueEventArgs { Queue = queue });
-        }
+        public abstract void AddNumberToQueue();
     }
 }

@@ -8,8 +8,6 @@ namespace ThreadObserver.Abstractions
 {
     public interface IPublisher
     {
-        public event EventHandler<QueueEventArgs> Published;
-
-        public void AddNumberToQueue(Queue<int> queue);
+        public void AddNumberToQueue();
     }
 }

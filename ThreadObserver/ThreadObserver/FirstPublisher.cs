@@ -10,12 +10,22 @@ namespace ThreadObserver
 {
     public class FirstPublisher : Publisher
     {
-        public override void AddNumberToQueue(Queue<int> queue)
+        private object _locker;
+
+        public FirstPublisher(Queue<int> queue, object locker)
+            : base(queue)
         {
-            var random = new Random().Next(1, 10);
-            queue.Enqueue(random);
-            Console.WriteLine($"First publisher has added a number: {random}.");
-            Publish(queue);
+            _locker = locker;
+        }
+
+        public override void AddNumberToQueue()
+        {
+            lock (_locker)
+            {
+                var random = new Random().Next(1, 10);
+                Queue.Enqueue(random);
+                Console.WriteLine($"First publisher has added a number: {random}.");
+            }
         }
     }
 }

@@ -8,6 +8,6 @@ namespace ThreadObserver.Abstractions
 {
     public interface ISubscriber
     {
-        public void Update(object sender, QueueEventArgs eventArgs);
+        public void Update();
     }
 }

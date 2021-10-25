@@ -9,22 +9,16 @@ namespace ThreadObserver
         public static void Main(string[] args)
         {
             var locker = new object();
-            var firstPublisher = new FirstPublisher();
-            var secondPublisher = new SecondPublisher();
-            var subscriber = new Subscriber();
             var queue = new Queue<int>();
-
-            firstPublisher.Attach(subscriber);
-            secondPublisher.Attach(subscriber);
+            var firstPublisher = new FirstPublisher(queue, locker);
+            var secondPublisher = new SecondPublisher(queue, locker);
+            var subscriber = new Subscriber(queue, locker);
 
             var firstThread = new Thread(() =>
             {
                 for (var i = 0; i < 10; i++)
                 {
-                    lock (locker)
-                    {
-                        firstPublisher.AddNumberToQueue(queue);
-                    }
+                    firstPublisher.AddNumberToQueue();
 
                     Thread.Sleep(500);
                 }
@@ -34,17 +28,27 @@ namespace ThreadObserver
             {
                 for (var i = 0; i < 10; i++)
                 {
-                    lock (locker)
-                    {
-                        secondPublisher.AddNumberToQueue(queue);
-                    }
+                    secondPublisher.AddNumberToQueue();
 
-                    Thread.Sleep(500);
+                    Thread.Sleep(1000);
+                }
+            });
+
+            var thirdThread = new Thread(() =>
+            {
+                Thread.Sleep(100);
+
+                while (queue.Count > 0)
+                {
+                    subscriber.Update();
+
+                    Thread.Sleep(1200);
                 }
             });
 
             firstThread.Start();
             secondThread.Start();
+            thirdThread.Start();
         }
     }
 }

@@ -9,9 +9,26 @@ namespace ThreadObserver
 {
     public class Subscriber : ISubscriber
     {
-        public void Update(object sender, QueueEventArgs eventArgs)
+        private Queue<int> _queue;
+        private object _locker;
+
+        public Subscriber(Queue<int> queue, object locker)
         {
-            Console.WriteLine($"I have read {eventArgs.Queue.Dequeue()} from {sender.GetType()}.");
+            _queue = queue;
+            _locker = locker;
+        }
+
+        public void Update()
+        {
+            if (_queue.Count == 0)
+            {
+                return;
+            }
+
+            lock (_locker)
+            {
+                Console.WriteLine($"I have read {_queue.Dequeue()}");
+            }
         }
     }
 }
